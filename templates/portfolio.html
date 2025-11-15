@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ name }} - Desenvolvedor Full Stack & RPA</title>
+    
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Swiper CSS para carousels -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #ec4899;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+            --border: #e2e8f0;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #334155;
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.05'%3E%3Cpath d='m36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            z-index: 0;
+        }
+        
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .profile-image {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            object-fit: cover;
+            transition: all 0.4s ease;
+        }
+        
+        .profile-image:hover {
+            transform: scale(1.05) rotate(-5deg);
+        }
+        
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .hero-subtitle {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            font-weight: 400;
+        }
+        
+        .hero-bio {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            opacity: 0.8;
+            line-height: 1.8;
+        }
+        
+        .erp-highlight {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem auto;
+            max-width: 600px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .erp-highlight h4 {
+            color: #fbbf24;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .btn-erp {
+            background: #fbbf24;
+            color: #1e293b;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            margin-top: 1rem;
+            display: inline-block;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);
+        }
+        
+        .btn-erp:hover {
+            background: #f59e0b;
+            color: #1e293b;
+            transform: translateY(-3px);
+        }
+        
+        .btn-hero {
+            padding: 1.2rem 2.5rem;
+            border-radius: 50px;
+            font-weight: 700;
+            border: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary-hero {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--primary);
+        }
+        
+        .btn-primary-hero:hover {
+            background: white;
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .btn-outline-hero {
+            background: transparent;
+            border: 3px solid white;
+            color: white;
+        }
+        
+        .btn-outline-hero:hover {
+            background: white;
+            color: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        /* Navigation */
+        .navbar {
+            background: rgba(30, 41, 59, 0.95) !important;
+            backdrop-filter: blur(10px);
+            padding: 1rem 0;
+        }
+        
+        .navbar-brand {
+            font-weight: 800;
+            font-size: 1.5rem;
+            color: white !important;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8) !important;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            color: var(--primary) !important;
+        }
+        
+        /* Sections */
+        .section {
+            padding: 100px 0;
+        }
+        
+        .section-alt {
+            background: var(--light);
+        }
+        
+        .section-title {
+            font-size: 3rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto 4rem;
+        }
+        
+        /* Stats */
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: none;
+            height: 100%;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.2);
+        }
+        
+        .stat-number {
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+        
+        .stat-label {
+            color: #64748b;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        /* Projects com Galeria */
+        .project-card {
+            border: none;
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            height: 100%;
+            background: white;
+            position: relative;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 0 30px 80px rgba(99, 102, 241, 0.3);
+        }
+        
+        .project-header {
+            height: 280px;
+            background: var(--primary);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .project-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        
+        .project-icon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            color: white;
+            z-index: 2;
+        }
+        
+        /* Carousel de Galeria */
+        .project-carousel {
+            height: 100%;
+        }
+        
+        .swiper {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .swiper-slide {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .swiper-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .swiper-pagination {
+            bottom: 10px !important;
+        }
+        
+        .swiper-pagination-bullet {
+            background: rgba(255, 255, 255, 0.7) !important;
+        }
+        
+        .swiper-pagination-bullet-active {
+            background: white !important;
+        }
+        
+        .swiper-button-next,
+        .swiper-button-prev {
+            color: white !important;
+            background: rgba(0, 0, 0, 0.5);
+            width: 40px !important;
+            height: 40px !important;
+            border-radius: 50%;
+            margin-top: -20px !important;
+        }
+        
+        .swiper-button-next:after,
+        .swiper-button-prev:after {
+            font-size: 16px !important;
+        }
+        
+        .gallery-indicator {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 10;
+        }
+        
+        .project-content {
+            padding: 2rem;
+        }
+        
+        .project-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .badge-sistema { background: rgba(99, 102, 241, 0.1); color: var(--primary); }
+        .badge-rpa { background: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .badge-api { background: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .badge-web { background: rgba(236, 72, 153, 0.1); color: var(--secondary); }
+        .badge-mobile { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .badge-outros { background: rgba(100, 116, 139, 0.1); color: #64748b; }
+        
+        .project-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+        
+        .project-description {
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+        
+        .project-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #64748b;
+        }
+        
+        .project-actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+        
+        .project-link {
+            flex: 1;
+            padding: 0.8rem 1.2rem;
+            border-radius: 15px;
+            text-decoration: none;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .link-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .link-primary:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+        
+        .link-secondary {
+            background: rgba(100, 116, 139, 0.1);
+            color: #64748b;
+            border: 1px solid rgba(100, 116, 139, 0.2);
+        }
+        
+        .link-secondary:hover {
+            background: rgba(100, 116, 139, 0.2);
+            color: var(--dark);
+            transform: translateY(-2px);
+        }
+        
+        .gallery-btn {
+            background: rgba(236, 72, 153, 0.1);
+            color: var(--secondary);
+            border: 1px solid rgba(236, 72, 153, 0.2);
+        }
+        
+        .gallery-btn:hover {
+            background: var(--secondary);
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        /* Featured Projects */
+        .project-card.featured {
+            border: 3px solid var(--warning);
+            position: relative;
+        }
+        
+        .project-card.featured::before {
+            content: '⭐ Destaque';
+            position: absolute;
+            top: 1rem;
+            left: 1rem;
+            background: var(--warning);
+            color: white;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            z-index: 10;
+        }
+        
+        /* Modal de Galeria */
+        .gallery-modal .modal-dialog {
+            max-width: 90vw;
+            height: 90vh;
+        }
+        
+        .gallery-modal .modal-content {
+            height: 100%;
+            border-radius: 20px;
+            border: none;
+        }
+        
+        .gallery-modal .modal-body {
+            padding: 0;
+            height: calc(100% - 60px);
+        }
+        
+        .gallery-modal-swiper {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .gallery-modal-swiper .swiper-slide {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #000;
+        }
+        
+        .gallery-modal-swiper .swiper-slide img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        
+        .gallery-modal-swiper .swiper-pagination {
+            bottom: 20px !important;
+        }
+        
+        .gallery-modal-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: 2rem 1rem 1rem;
+            z-index: 10;
+        }
+        
+        /* Contact */
+        .contact-card {
+            background: white;
+            border-radius: 30px;
+            padding: 4rem;
+            text-align: center;
+            box-shadow: 0 20px 80px rgba(0, 0, 0, 0.1);
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+        
+        .contact-item {
+            background: var(--light);
+            padding: 2rem;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .contact-item:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+            transform: translateY(-5px);
+        }
+        
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .contact-title {
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 0.8rem;
+        }
+        
+        .contact-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .contact-link:hover {
+            color: var(--secondary);
+        }
+        
+        .btn-contact {
+            background: linear-gradient(135deg, var(--success) 0%, #059669 100%);
+            color: white;
+            padding: 1.2rem 3rem;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-contact:hover {
+            color: white;
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(16, 185, 129, 0.4);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero-title { font-size: 2.5rem; }
+            .section-title { font-size: 2rem; }
+            .profile-image { width: 150px; height: 150px; }
+            .project-header { height: 220px; }
+            .contact-card { padding: 2rem; }
+            .gallery-modal .modal-dialog { max-width: 95vw; }
+        }
+        
+        /* Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#home">
+                <i class="fas fa-laptop-code me-2"></i>{{ name.split()[0] }}
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#home">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#about">Sobre</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#systems">Sistemas</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#rpa">RPA</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#contact">Contato</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin">
+                            <i class="fas fa-cog me-1"></i>Admin
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero -->
+    <section id="home" class="hero">
+        <div class="container">
+            <div class="row justify-content-center text-center">
+                <div class="col-lg-10">
+                    <div class="hero-content">
+                        {% if avatar %}
+                        <img src="{{ avatar }}" alt="{{ name }}" class="profile-image mb-4 fade-in">
+                        {% endif %}
+                        
+                        <h1 class="hero-title fade-in">{{ name }}</h1>
+                        <p class="hero-subtitle fade-in">{{ bio.split('.')[0] }}</p>
+                        <p class="hero-bio fade-in">{{ bio }}</p>
+                        
+                        <!-- ERP SYSROHDEN -->
+                        <div class="erp-highlight fade-in">
+                            <h4><i class="fas fa-crown me-2"></i>ERP SYSROHDEN</h4>
+                            <p style="opacity: 0.9; margin-bottom: 0;">
+                                Sistema ERP empresarial completo desenvolvido desde a arquitetura até a implementação final
+                            </p>
+                            <a href="http://sys.rohden.com.br/" target="_blank" class="btn-erp">
+                                <i class="fas fa-rocket me-2"></i>Acessar Sistema
+                            </a>
+                        </div>
+                        
+                        <div class="d-flex justify-content-center gap-4 flex-wrap fade-in">
+                            <a href="#systems" class="btn-hero btn-primary-hero">
+                                <i class="fas fa-desktop me-2"></i>Sistemas
+                            </a>
+                            <a href="#rpa" class="btn-hero btn-outline-hero">
+                                <i class="fas fa-robot me-2"></i>RPA
+                            </a>
+                            <a href="#contact" class="btn-hero btn-outline-hero">
+                                <i class="fas fa-comments me-2"></i>Contato
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats -->
+    <section id="about" class="section section-alt">
+        <div class="container">
+            <div class="row g-4">
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-card fade-in">
+                        <div class="stat-number">{{ stats.experience }}</div>
+                        <div class="stat-label">Anos de Experiência</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-card fade-in">
+                        <div class="stat-number">{{ stats.systems }}</div>
+                        <div class="stat-label">Sistemas Criados</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-card fade-in">
+                        <div class="stat-number">{{ stats.rpa }}</div>
+                        <div class="stat-label">Robôs RPA</div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <div class="stat-card fade-in">
+                        <div class="stat-number">{{ stats.total }}</div>
+                        <div class="stat-label">Projetos Total</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sistemas -->
+    <section id="systems" class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">
+                💻 <span style="color: var(--primary);">Sistemas</span> Criados
+            </h2>
+            <p class="section-subtitle fade-in">
+                Soluções completas de software desenvolvidas para empresas e organizações
+            </p>
+            
+            {% if projects.sistema %}
+            <div class="row g-4">
+                {% for project in projects.sistema %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="card project-card fade-in {% if project.featured %}featured{% endif %}">
+                        <div class="project-header" {% if project.color %}style="background: {{ project.color }};"{% endif %}>
+                            {% if project.gallery and project.gallery|length > 0 %}
+                                <div class="gallery-indicator">
+                                    <i class="fas fa-images me-1"></i>{{ project.gallery|length }}
+                                </div>
+                                <div class="project-carousel swiper" id="swiper-{{ project.id }}">
+                                    <div class="swiper-wrapper">
+                                        {% for image in project.gallery %}
+                                        <div class="swiper-slide">
+                                            <img src="{{ image.data }}" alt="{{ image.filename }}" loading="lazy">
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="swiper-pagination"></div>
+                                    <div class="swiper-button-next"></div>
+                                    <div class="swiper-button-prev"></div>
+                                </div>
+                            {% elif project.main_image %}
+                                <img src="{{ project.main_image }}" class="project-image" alt="{{ project.title }}">
+                            {% else %}
+                                <i class="fas fa-desktop project-icon"></i>
+                            {% endif %}
+                        </div>
+                        <div class="project-content">
+                            <span class="project-badge badge-sistema">{{ project.category.upper() }}</span>
+                            <h4 class="project-title">{{ project.title }}</h4>
+                            <p class="project-description">{{ project.description }}</p>
+                            
+                            <div class="project-meta">
+                                <span><i class="fas fa-code me-1"></i>{{ project.language }}</span>
+                                {% if project.stars is defined and project.stars > 0 %}
+                                <span><i class="fas fa-star me-1"></i>{{ project.stars }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="project-actions">
+                                {% if project.github_url %}
+                                <a href="{{ project.github_url }}" target="_blank" class="project-link link-primary">
+                                    <i class="fab fa-github me-1"></i>Código
+                                </a>
+                                {% endif %}
+                                {% if project.demo_url %}
+                                <a href="{{ project.demo_url }}" target="_blank" class="project-link link-secondary">
+                                    <i class="fas fa-external-link-alt me-1"></i>Demo
+                                </a>
+                                {% endif %}
+                                {% if project.gallery and project.gallery|length > 1 %}
+                                <button class="project-link gallery-btn" onclick="openGallery('{{ project.id }}', {{ project.gallery|tojson|safe }}, '{{ project.title }}')">
+                                    <i class="fas fa-images me-1"></i>Galeria
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center fade-in">
+                <i class="fas fa-desktop fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Nenhum sistema encontrado ainda.</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- RPA -->
+    <section id="rpa" class="section section-alt">
+        <div class="container">
+            <h2 class="section-title fade-in">
+                🤖 <span style="color: var(--success);">RPA</span> e Robôs
+            </h2>
+            <p class="section-subtitle fade-in">
+                Automações inteligentes desenvolvidas para otimizar processos empresariais
+            </p>
+            
+            {% if projects.rpa %}
+            <div class="row g-4">
+                {% for project in projects.rpa %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="card project-card fade-in {% if project.featured %}featured{% endif %}">
+                        <div class="project-header" {% if project.color %}style="background: {{ project.color }};"{% endif %}>
+                            {% if project.gallery and project.gallery|length > 0 %}
+                                <div class="gallery-indicator">
+                                    <i class="fas fa-images me-1"></i>{{ project.gallery|length }}
+                                </div>
+                                <div class="project-carousel swiper" id="swiper-{{ project.id }}">
+                                    <div class="swiper-wrapper">
+                                        {% for image in project.gallery %}
+                                        <div class="swiper-slide">
+                                            <img src="{{ image.data }}" alt="{{ image.filename }}" loading="lazy">
+                                        </div>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="swiper-pagination"></div>
+                                    <div class="swiper-button-next"></div>
+                                    <div class="swiper-button-prev"></div>
+                                </div>
+                            {% elif project.main_image %}
+                                <img src="{{ project.main_image }}" class="project-image" alt="{{ project.title }}">
+                            {% else %}
+                                <i class="fas fa-robot project-icon"></i>
+                            {% endif %}
+                        </div>
+                        <div class="project-content">
+                            <span class="project-badge badge-rpa">{{ project.category.upper() }}</span>
+                            <h4 class="project-title">{{ project.title }}</h4>
+                            <p class="project-description">{{ project.description }}</p>
+                            
+                            <div class="project-meta">
+                                <span><i class="fas fa-code me-1"></i>{{ project.language }}</span>
+                                {% if project.stars is defined and project.stars > 0 %}
+                                <span><i class="fas fa-star me-1"></i>{{ project.stars }}</span>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="project-actions">
+                                {% if project.github_url %}
+                                <a href="{{ project.github_url }}" target="_blank" class="project-link link-primary">
+                                    <i class="fab fa-github me-1"></i>Código
+                                </a>
+                                {% endif %}
+                                {% if project.demo_url %}
+                                <a href="{{ project.demo_url }}" target="_blank" class="project-link link-secondary">
+                                    <i class="fas fa-external-link-alt me-1"></i>Demo
+                                </a>
+                                {% endif %}
+                                {% if project.gallery and project.gallery|length > 1 %}
+                                <button class="project-link gallery-btn" onclick="openGallery('{{ project.id }}', {{ project.gallery|tojson|safe }}, '{{ project.title }}')">
+                                    <i class="fas fa-images me-1"></i>Galeria
+                                </button>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center fade-in">
+                <i class="fas fa-robot fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Nenhum robô RPA encontrado ainda.</p>
+            </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Contact -->
+    <section id="contact" class="section">
+        <div class="container">
+            <h2 class="section-title fade-in">
+                💬 Vamos <span style="color: var(--primary);">Conversar</span>?
+            </h2>
+            <p class="section-subtitle fade-in">
+                Entre em contato comigo para discutir seu próximo projeto
+            </p>
+            
+            <div class="contact-card fade-in">
+                <h3 style="margin-bottom: 2rem; color: var(--dark);">Entre em contato comigo!</h3>
+                
+                <div class="contact-grid">
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-whatsapp"></i>
+                        </div>
+                        <div class="contact-title">WhatsApp</div>
+                        <a href="https://wa.me/55{{ whatsapp }}" target="_blank" class="contact-link">
+                            (47) 99660-9407
+                        </a>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-title">Email</div>
+                        <a href="mailto:{{ email }}" class="contact-link">
+                            {{ email }}
+                        </a>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-instagram"></i>
+                        </div>
+                        <div class="contact-title">Instagram</div>
+                        <a href="{{ instagram }}" target="_blank" class="contact-link">
+                            @rudieri.machado
+                        </a>
+                    </div>
+
+                    <div class="contact-item">
+                        <div class="contact-icon">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div class="contact-title">GitHub</div>
+                        <a href="{{ github_url }}" target="_blank" class="contact-link">
+                            Ver Repositórios
+                        </a>
+                    </div>
+                </div>
+                
+                <a href="https://wa.me/55{{ whatsapp }}" target="_blank" class="btn-contact">
+                    <i class="fab fa-whatsapp me-2"></i>Chamar no WhatsApp
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white text-center py-5">
+        <div class="container">
+            <p class="mb-0">&copy; 2024 {{ name }}. Desenvolvedor Full Stack & Especialista RPA.</p>
+        </div>
+    </footer>
+
+    <!-- Modal de Galeria -->
+    <div class="modal fade gallery-modal" id="galleryModal" tabindex="-1">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title text-white" id="galleryModalTitle"></h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="gallery-modal-swiper swiper">
+                        <div class="swiper-wrapper" id="galleryModalWrapper">
+                            <!-- Slides serão inseridos via JavaScript -->
+                        </div>
+                        <div class="swiper-pagination"></div>
+                        <div class="swiper-button-next"></div>
+                        <div class="swiper-button-prev"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Swiper JS -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    
+    <script>
+        // Inicializa Swipers para cada projeto
+        document.addEventListener('DOMContentLoaded', function() {
+            // Para cada carousel de projeto
+            document.querySelectorAll('.project-carousel').forEach((carousel, index) => {
+                new Swiper(carousel, {
+                    loop: true,
+                    autoplay: {
+                        delay: 4000,
+                        disableOnInteraction: false,
+                    },
+                    pagination: {
+                        el: carousel.querySelector('.swiper-pagination'),
+                        clickable: true,
+                    },
+                    navigation: {
+                        nextEl: carousel.querySelector('.swiper-button-next'),
+                        prevEl: carousel.querySelector('.swiper-button-prev'),
+                    },
+                    effect: 'fade',
+                    fadeEffect: {
+                        crossFade: true
+                    }
+                });
+            });
+        });
+
+        // Função para abrir galeria em modal
+        function openGallery(projectId, images, title) {
+            const modal = new bootstrap.Modal(document.getElementById('galleryModal'));
+            const wrapper = document.getElementById('galleryModalWrapper');
+            const modalTitle = document.getElementById('galleryModalTitle');
+            
+            modalTitle.textContent = title + ' - Galeria';
+            
+            // Limpa slides anteriores
+            wrapper.innerHTML = '';
+            
+            // Adiciona slides
+            images.forEach(image => {
+                const slide = document.createElement('div');
+                slide.className = 'swiper-slide';
+                slide.innerHTML = `
+                    <img src="${image.data}" alt="${image.filename}" loading="lazy">
+                    <div class="gallery-modal-info">
+                        <h6>${image.filename}</h6>
+                        ${image.description ? `<p>${image.description}</p>` : ''}
+                        <small>Módulo: ${image.module || 'Geral'}</small>
+                    </div>
+                `;
+                wrapper.appendChild(slide);
+            });
+            
+            // Inicializa Swiper do modal
+            setTimeout(() => {
+                new Swiper('.gallery-modal-swiper', {
+                    loop: images.length > 1,
+                    keyboard: true,
+                    pagination: {
+                        el: '.gallery-modal-swiper .swiper-pagination',
+                        clickable: true,
+                    },
+                    navigation: {
+                        nextEl: '.gallery-modal-swiper .swiper-button-next',
+                        prevEl: '.gallery-modal-swiper .swiper-button-prev',
+                    },
+                });
+            }, 100);
+            
+            modal.show();
+        }
+
+        // Smooth scrolling
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Scroll animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Initialize animations on load
+        window.addEventListener('load', () => {
+            document.querySelectorAll('.fade-in').forEach((el, index) => {
+                setTimeout(() => {
+                    el.classList.add('visible');
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

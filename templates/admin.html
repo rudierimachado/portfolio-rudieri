@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - {{ user.name or 'Rudieri Machado' }}</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #1e293b;
+            --light: #f8fafc;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light);
+        }
+        
+        .sidebar {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem 0;
+            position: fixed;
+            width: 280px;
+            z-index: 1000;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 1rem 1.5rem;
+            border-radius: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            padding: 2rem;
+        }
+        
+        .card-modern {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .card-modern:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            height: 100%;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .project-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .project-item:hover {
+            border-color: var(--primary);
+            box-shadow: 0 5px 20px rgba(99, 102, 241, 0.1);
+        }
+        
+        .project-source {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        
+        .source-github {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .source-custom {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+        
+        .btn-modern {
+            padding: 0.75rem 1.5rem;
+            border-radius: 15px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+        }
+        
+        .form-modern {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-control {
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        }
+        
+        .modal-content {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .project-image-preview {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 10px;
+            object-fit: cover;
+        }
+        
+        .tab-content {
+            padding: 2rem 0;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 15px 15px 0 0;
+            margin-right: 0.5rem;
+            background: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+        }
+        
+        .nav-tabs .nav-link.active {
+            background: white;
+            color: var(--primary);
+            border-bottom: 3px solid var(--primary);
+        }
+        
+        /* Sistema de Galeria */
+        .gallery-upload-area {
+            border: 2px dashed #e2e8f0;
+            border-radius: 15px;
+            padding: 3rem 2rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+        
+        .gallery-upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        
+        .gallery-upload-area.dragover {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.1);
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .gallery-item {
+            position: relative;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .gallery-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .gallery-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        
+        .gallery-item-info {
+            padding: 1rem;
+        }
+        
+        .gallery-item-actions {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            display: flex;
+            gap: 0.3rem;
+        }
+        
+        .gallery-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+        
+        .gallery-item:hover .gallery-btn {
+            opacity: 1;
+        }
+        
+        .gallery-btn.btn-main {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .gallery-btn.btn-delete {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .module-tag {
+            background: var(--primary);
+            color: white;
+            padding: 0.2rem 0.6rem;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+        
+        .upload-progress {
+            margin-top: 1rem;
+        }
+        
+        .file-preview {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            background: #f8fafc;
+            border-radius: 10px;
+            margin: 0.5rem 0;
+        }
+        
+        .file-preview img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+        
+        .file-info {
+            flex: 1;
+        }
+        
+        .file-size {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        
+        .modules-filter {
+            margin-bottom: 2rem;
+        }
+        
+        .module-filter-btn {
+            background: #e2e8f0;
+            color: #64748b;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin: 0.2rem;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .module-filter-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 sidebar">
+                <div class="text-center mb-4">
+                    {% if user.avatar_url %}
+                    <img src="{{ user.avatar_url }}" alt="Avatar" class="rounded-circle mb-3" width="80" height="80">
+                    {% endif %}
+                    <h5>{{ user.name or 'Rudieri Machado' }}</h5>
+                    <p class="small opacity-75">Administrador</p>
+                </div>
+                
+                <ul class="nav nav-pills flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#overview" data-bs-toggle="tab">
+                            <i class="fas fa-tachometer-alt me-2"></i>Overview
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#github" data-bs-toggle="tab">
+                            <i class="fab fa-github me-2"></i>GitHub Projects
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#custom" data-bs-toggle="tab">
+                            <i class="fas fa-star me-2"></i>Custom Projects
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#gallery" data-bs-toggle="tab">
+                            <i class="fas fa-images me-2"></i>Galerias
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#create" data-bs-toggle="tab">
+                            <i class="fas fa-plus-circle me-2"></i>Criar Projeto
+                        </a>
+                    </li>
+                    <li class="nav-item mt-4">
+                        <a class="nav-link" href="/" target="_blank">
+                            <i class="fas fa-external-link-alt me-2"></i>Ver Portfólio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/admin/logout">
+                            <i class="fas fa-sign-out-alt me-2"></i>Sair
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Main Content -->
+            <div class="col-lg-9 main-content">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2><i class="fas fa-cogs me-2"></i>Dashboard Administrativo</h2>
+                    <div class="text-muted">
+                        <i class="fas fa-clock me-1"></i>
+                        <span id="currentTime"></span>
+                    </div>
+                </div>
+                
+                <!-- Tab Content -->
+                <div class="tab-content">
+                    <!-- Overview Tab -->
+                    <div class="tab-pane fade show active" id="overview">
+                        <div class="row g-4 mb-5">
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <div class="stat-number">{{ github_projects|length }}</div>
+                                    <div class="text-muted">Projetos GitHub</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <div class="stat-number">{{ custom_projects|length }}</div>
+                                    <div class="text-muted">Projetos Custom</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <div class="stat-number">{{ total_projects }}</div>
+                                    <div class="text-muted">Total Projetos</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="stat-card">
+                                    <div class="stat-number">{{ categories|length }}</div>
+                                    <div class="text-muted">Categorias</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card card-modern">
+                            <div class="card-header bg-transparent">
+                                <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Atividades Recentes</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Projetos por Categoria</h6>
+                                        <div id="categoryStats">
+                                            {% for category in categories %}
+                                            <div class="d-flex justify-content-between mb-2">
+                                                <span>{{ category.title() }}</span>
+                                                <span class="badge bg-primary">{{ github_projects | selectattr('category', 'equalto', category) | list | length + custom_projects | selectattr('category', 'equalto', category) | list | length }}</span>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Sistema de Galeria</h6>
+                                        <p class="text-muted small">Agora você pode adicionar múltiplas imagens, GIFs e organizar por módulos em cada projeto!</p>
+                                        <button class="btn btn-primary btn-sm" data-bs-toggle="tab" href="#gallery">
+                                            <i class="fas fa-images me-2"></i>Gerenciar Galerias
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- GitHub Projects Tab -->
+                    <div class="tab-pane fade" id="github">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4><i class="fab fa-github me-2"></i>Projetos do GitHub</h4>
+                            <button class="btn btn-primary btn-modern" onclick="refreshGitHubProjects()">
+                                <i class="fas fa-sync-alt me-2"></i>Atualizar
+                            </button>
+                        </div>
+                        
+                        <div id="githubProjectsList">
+                            {% for project in github_projects %}
+                            <div class="project-item" data-project-id="{{ project.github_id }}">
+                                <div class="project-source source-github">GitHub</div>
+                                
+                                <div class="row align-items-center">
+                                    <div class="col-md-2">
+                                        {% if project.main_image %}
+                                            <img src="{{ project.main_image }}" class="project-image-preview" alt="{{ project.title }}">
+                                        {% else %}
+                                            <div class="bg-light rounded p-3 text-center">
+                                                <i class="fas fa-code fa-2x text-muted"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-5">
+                                        <h6 class="mb-1">{{ project.title }}</h6>
+                                        <p class="text-muted small mb-2">{{ project.description[:100] }}...</p>
+                                        <div class="d-flex gap-2 mb-2">
+                                            <span class="badge bg-primary">{{ project.category }}</span>
+                                            <span class="badge bg-secondary">{{ project.language }}</span>
+                                            {% if project.featured %}
+                                            <span class="badge bg-warning">⭐ Destaque</span>
+                                            {% endif %}
+                                            {% if project.gallery and project.gallery|length > 0 %}
+                                            <span class="badge bg-info">📸 {{ project.gallery|length }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        {% if project.stars > 0 %}
+                                        <div><i class="fas fa-star text-warning"></i> {{ project.stars }}</div>
+                                        {% endif %}
+                                        {% if project.forks > 0 %}
+                                        <div><i class="fas fa-code-branch text-info"></i> {{ project.forks }}</div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-outline-primary btn-sm" 
+                                                    onclick="editGitHubProject('{{ project.github_id }}', '{{ project.title }}', '{{ project.category }}', '{{ project.description }}')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-info btn-sm" 
+                                                    onclick="manageGallery('{{ project.id }}', '{{ project.title }}')">
+                                                <i class="fas fa-images"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Custom Projects Tab -->
+                    <div class="tab-pane fade" id="custom">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <h4><i class="fas fa-star me-2"></i>Projetos Customizados</h4>
+                            <button class="btn btn-success btn-modern" data-bs-toggle="tab" href="#create">
+                                <i class="fas fa-plus me-2"></i>Novo Projeto
+                            </button>
+                        </div>
+                        
+                        <div id="customProjectsList">
+                            {% for project in custom_projects %}
+                            <div class="project-item" data-project-id="{{ project.id }}">
+                                <div class="project-source source-custom">Custom</div>
+                                
+                                <div class="row align-items-center">
+                                    <div class="col-md-2">
+                                        {% if project.main_image %}
+                                            <img src="{{ project.main_image }}" class="project-image-preview" alt="{{ project.title }}">
+                                        {% else %}
+                                            <div class="bg-light rounded p-3 text-center">
+                                                <i class="fas fa-project-diagram fa-2x text-muted"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6 class="mb-1">{{ project.title }}</h6>
+                                        <p class="text-muted small mb-2">{{ project.description[:100] }}...</p>
+                                        <div class="d-flex gap-2 mb-2">
+                                            <span class="badge bg-success">{{ project.category }}</span>
+                                            {% if project.language %}
+                                            <span class="badge bg-info">{{ project.language }}</span>
+                                            {% endif %}
+                                            {% if project.featured %}
+                                            <span class="badge bg-warning">⭐ Destaque</span>
+                                            {% endif %}
+                                            {% if project.gallery and project.gallery|length > 0 %}
+                                            <span class="badge bg-info">📸 {{ project.gallery|length }}</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <div class="d-flex gap-2">
+                                            <button class="btn btn-outline-info btn-sm" 
+                                                    onclick="manageGallery('{{ project.id }}', '{{ project.title }}')">
+                                                <i class="fas fa-images"></i>
+                                            </button>
+                                            <button class="btn btn-outline-primary btn-sm" 
+                                                    onclick="editCustomProject('{{ project.id }}')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm" 
+                                                    onclick="deleteCustomProject('{{ project.id }}')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                            
+                            {% if not custom_projects %}
+                            <div class="text-center py-5">
+                                <i class="fas fa-plus-circle fa-3x text-muted mb-3"></i>
+                                <h5 class="text-muted">Nenhum projeto customizado</h5>
+                                <p class="text-muted">Crie seu primeiro projeto customizado</p>
+                                <button class="btn btn-primary btn-modern" data-bs-toggle="tab" href="#create">
+                                    <i class="fas fa-plus me-2"></i>Criar Projeto
+                                </button>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Gallery Management Tab -->
+                    <div class="tab-pane fade" id="gallery">
+                        <h4><i class="fas fa-images me-2"></i>Gerenciamento de Galerias</h4>
+                        <p class="text-muted mb-4">Adicione múltiplas imagens, GIFs e organize por módulos</p>
+                        
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card card-modern">
+                                    <div class="card-header">
+                                        <h6 class="mb-0">Selecionar Projeto</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <select class="form-select" id="projectSelector" onchange="loadProjectGallery()">
+                                            <option value="">Escolha um projeto...</option>
+                                            <optgroup label="GitHub Projects">
+                                                {% for project in github_projects %}
+                                                <option value="{{ project.id }}">{{ project.title }}</option>
+                                                {% endfor %}
+                                            </optgroup>
+                                            <optgroup label="Custom Projects">
+                                                {% for project in custom_projects %}
+                                                <option value="{{ project.id }}">{{ project.title }}</option>
+                                                {% endfor %}
+                                            </optgroup>
+                                        </select>
+                                        
+                                        <div id="projectInfo" class="mt-3" style="display: none;">
+                                            <div class="text-center">
+                                                <div id="projectPreview" class="mb-3"></div>
+                                                <h6 id="selectedProjectTitle"></h6>
+                                                <small class="text-muted" id="selectedProjectCategory"></small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-8">
+                                <div id="galleryManager" style="display: none;">
+                                    <!-- Upload Area -->
+                                    <div class="card card-modern mb-4">
+                                        <div class="card-header">
+                                            <h6 class="mb-0">Upload de Imagens/GIFs</h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="row mb-3">
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Módulo</label>
+                                                    <input type="text" class="form-control" id="moduleInput" placeholder="Ex: Dashboard, Login, Relatórios" value="Geral">
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <label class="form-label">Opções</label>
+                                                    <div class="form-check mt-2">
+                                                        <input class="form-check-input" type="checkbox" id="setAsMain">
+                                                        <label class="form-check-label" for="setAsMain">
+                                                            Definir primeira como principal
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="gallery-upload-area" id="uploadArea">
+                                                <i class="fas fa-cloud-upload-alt fa-3x text-muted mb-3"></i>
+                                                <h5>Arraste arquivos aqui ou clique para selecionar</h5>
+                                                <p class="text-muted">Suporte: PNG, JPG, GIF, WEBP (max 10MB cada)</p>
+                                                <input type="file" id="fileInput" multiple accept="image/*,.gif" style="display: none;">
+                                            </div>
+                                            
+                                            <div id="uploadProgress" class="upload-progress" style="display: none;"></div>
+                                            <div id="filePreview" class="mt-3"></div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Gallery Display -->
+                                    <div class="card card-modern">
+                                        <div class="card-header d-flex justify-content-between align-items-center">
+                                            <h6 class="mb-0">Galeria do Projeto</h6>
+                                            <div id="galleryStats" class="text-muted small"></div>
+                                        </div>
+                                        <div class="card-body">
+                                            <div class="modules-filter" id="modulesFilter">
+                                                <button class="module-filter-btn active" data-module="all">Todos</button>
+                                            </div>
+                                            
+                                            <div class="gallery-grid" id="galleryGrid">
+                                                <!-- Imagens serão carregadas aqui -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Create Project Tab -->
+                    <div class="tab-pane fade" id="create">
+                        <h4><i class="fas fa-plus-circle me-2"></i>Criar Novo Projeto</h4>
+                        <p class="text-muted mb-4">Adicione um projeto customizado com galeria de imagens</p>
+                        
+                        <div class="form-modern">
+                            <form id="createProjectForm" enctype="multipart/form-data">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Título do Projeto</label>
+                                        <input type="text" name="title" class="form-control" placeholder="Ex: Sistema de Vendas" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Categoria</label>
+                                        <select name="category" class="form-select" required>
+                                            <option value="">Selecione uma categoria</option>
+                                            {% for category in categories %}
+                                            <option value="{{ category }}">{{ category.title() }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label fw-bold">Descrição</label>
+                                        <textarea name="description" class="form-control" rows="4" 
+                                                  placeholder="Descreva o projeto, suas funcionalidades e objetivos..." required></textarea>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">URL do GitHub (opcional)</label>
+                                        <input type="url" name="github_url" class="form-control" 
+                                               placeholder="https://github.com/usuario/repositorio">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">URL de Demo (opcional)</label>
+                                        <input type="url" name="demo_url" class="form-control" 
+                                               placeholder="https://projeto.com">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Linguagem Principal</label>
+                                        <input type="text" name="language" class="form-control" 
+                                               placeholder="Ex: Python, JavaScript, C#">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label fw-bold">Tags (separadas por vírgula)</label>
+                                        <input type="text" name="tags" class="form-control" 
+                                               placeholder="Ex: web, api, automation">
+                                    </div>
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="featured" id="featured">
+                                            <label class="form-check-label fw-bold" for="featured">
+                                                ⭐ Projeto em Destaque
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <hr class="my-4">
+                                
+                                <div class="d-flex gap-3">
+                                    <button type="submit" class="btn btn-success btn-modern">
+                                        <i class="fas fa-save me-2"></i>Criar Projeto
+                                    </button>
+                                    <button type="reset" class="btn btn-outline-secondary btn-modern">
+                                        <i class="fas fa-undo me-2"></i>Limpar
+                                    </button>
+                                </div>
+                                
+                                <div class="alert alert-info mt-3">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    <strong>Dica:</strong> Após criar o projeto, vá para a aba "Galerias" para adicionar imagens e organizar por módulos!
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for Editing GitHub Projects -->
+    <div class="modal fade" id="editGitHubModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fab fa-github me-2"></i>Editar Projeto GitHub
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="editGitHubForm" enctype="multipart/form-data">
+                        <input type="hidden" id="github_id" name="github_id">
+                        
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Título Customizado</label>
+                                <input type="text" name="title" id="edit_title" class="form-control">
+                                <small class="text-muted">Deixe vazio para usar o nome do repositório</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Categoria</label>
+                                <select name="category" id="edit_category" class="form-select">
+                                    {% for category in categories %}
+                                    <option value="{{ category }}">{{ category.title() }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-bold">Descrição Customizada</label>
+                                <textarea name="description" id="edit_description" class="form-control" rows="3"></textarea>
+                                <small class="text-muted">Deixe vazio para usar a descrição do GitHub</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">URL de Demo</label>
+                                <input type="url" name="demo_url" id="edit_demo_url" class="form-control">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Tags</label>
+                                <input type="text" name="tags" id="edit_tags" class="form-control">
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="featured" id="edit_featured">
+                                    <label class="form-check-label fw-bold" for="edit_featured">
+                                        ⭐ Destacar este projeto
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="saveGitHubProject()">
+                        <i class="fas fa-save me-2"></i>Salvar Alterações
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        let currentProjectId = null;
+        let currentProjectGallery = [];
+        
+        // Update time
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('currentTime').textContent = now.toLocaleString('pt-BR');
+        }
+        
+        setInterval(updateTime, 1000);
+        updateTime();
+        
+        // Create project form
+        document.getElementById('createProjectForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Criando...';
+            
+            try {
+                const response = await fetch('/api/projects/custom', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ Projeto criado com sucesso!\n\n🎯 Próximos passos:\n1. Vá para a aba "Galerias"\n2. Selecione o projeto recém-criado\n3. Adicione imagens e organize por módulos!');
+                    e.target.reset();
+                    
+                    // Switch to custom projects tab
+                    const customTab = new bootstrap.Tab(document.querySelector('a[href="#custom"]'));
+                    customTab.show();
+                    
+                    // Reload page to show new project
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    alert('❌ Erro: ' + (result.error || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                alert('❌ Erro: ' + error.message);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-save me-2"></i>Criar Projeto';
+            }
+        });
+        
+        // Gallery Management Functions
+        function loadProjectGallery() {
+            const projectId = document.getElementById('projectSelector').value;
+            const galleryManager = document.getElementById('galleryManager');
+            const projectInfo = document.getElementById('projectInfo');
+            
+            if (!projectId) {
+                galleryManager.style.display = 'none';
+                projectInfo.style.display = 'none';
+                return;
+            }
+            
+            currentProjectId = projectId;
+            projectInfo.style.display = 'block';
+            galleryManager.style.display = 'block';
+            
+            // Update project info
+            const selector = document.getElementById('projectSelector');
+            const selectedOption = selector.options[selector.selectedIndex];
+            document.getElementById('selectedProjectTitle').textContent = selectedOption.text;
+            
+            // Load gallery
+            fetchProjectGallery(projectId);
+        }
+        
+        async function fetchProjectGallery(projectId) {
+            try {
+                const response = await fetch(`/api/projects/${projectId}/gallery`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentProjectGallery = result.gallery.images || [];
+                    updateGalleryDisplay();
+                    updateModulesFilter();
+                }
+            } catch (error) {
+                console.error('Erro ao carregar galeria:', error);
+            }
+        }
+        
+        function updateGalleryDisplay(filterModule = 'all') {
+            const galleryGrid = document.getElementById('galleryGrid');
+            const galleryStats = document.getElementById('galleryStats');
+            
+            const filteredImages = filterModule === 'all' 
+                ? currentProjectGallery 
+                : currentProjectGallery.filter(img => img.module === filterModule);
+            
+            galleryStats.textContent = `${filteredImages.length} de ${currentProjectGallery.length} imagens`;
+            
+            galleryGrid.innerHTML = '';
+            
+            filteredImages.forEach(image => {
+                const galleryItem = document.createElement('div');
+                galleryItem.className = 'gallery-item';
+                galleryItem.innerHTML = `
+                    <img src="${image.data}" alt="${image.filename}" loading="lazy">
+                    <div class="gallery-item-actions">
+                        <button class="gallery-btn btn-main" onclick="setMainImage('${image.id}')" title="Definir como principal">
+                            <i class="fas fa-star"></i>
+                        </button>
+                        <button class="gallery-btn btn-delete" onclick="deleteImage('${image.id}')" title="Remover">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="gallery-item-info">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="module-tag">${image.module || 'Geral'}</span>
+                            <small class="text-muted">${formatFileSize(image.size || 0)}</small>
+                        </div>
+                        <div class="mt-1">
+                            <small class="text-muted">${image.filename}</small>
+                        </div>
+                        ${image.description ? `<small class="text-muted d-block mt-1">${image.description}</small>` : ''}
+                    </div>
+                `;
+                galleryGrid.appendChild(galleryItem);
+            });
+            
+            if (filteredImages.length === 0) {
+                galleryGrid.innerHTML = '<div class="text-center text-muted py-5"><i class="fas fa-images fa-3x mb-3"></i><p>Nenhuma imagem encontrada neste módulo</p></div>';
+            }
+        }
+        
+        function updateModulesFilter() {
+            const modulesFilter = document.getElementById('modulesFilter');
+            const modules = [...new Set(currentProjectGallery.map(img => img.module || 'Geral'))];
+            
+            modulesFilter.innerHTML = '<button class="module-filter-btn active" data-module="all">Todos</button>';
+            
+            modules.forEach(module => {
+                const count = currentProjectGallery.filter(img => (img.module || 'Geral') === module).length;
+                const btn = document.createElement('button');
+                btn.className = 'module-filter-btn';
+                btn.setAttribute('data-module', module);
+                btn.textContent = `${module} (${count})`;
+                btn.onclick = () => filterByModule(module, btn);
+                modulesFilter.appendChild(btn);
+            });
+        }
+        
+        function filterByModule(module, btn) {
+            // Update active button
+            document.querySelectorAll('.module-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            updateGalleryDisplay(module);
+        }
+        
+        // Upload handling
+        document.getElementById('uploadArea').addEventListener('click', () => {
+            document.getElementById('fileInput').click();
+        });
+        
+        document.getElementById('fileInput').addEventListener('change', handleFileSelection);
+        
+        // Drag and drop
+        const uploadArea = document.getElementById('uploadArea');
+        
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+        
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+        
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            
+            const files = Array.from(e.dataTransfer.files);
+            processFiles(files);
+        });
+        
+        function handleFileSelection(e) {
+            const files = Array.from(e.target.files);
+            processFiles(files);
+        }
+        
+        function processFiles(files) {
+            if (!currentProjectId) {
+                alert('Selecione um projeto primeiro!');
+                return;
+            }
+            
+            const filePreview = document.getElementById('filePreview');
+            filePreview.innerHTML = '';
+            
+            files.forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const preview = document.createElement('div');
+                    preview.className = 'file-preview';
+                    
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        preview.innerHTML = `
+                            <img src="${e.target.result}" alt="${file.name}">
+                            <div class="file-info">
+                                <div><strong>${file.name}</strong></div>
+                                <div class="file-size">${formatFileSize(file.size)}</div>
+                                <input type="text" class="form-control form-control-sm mt-1" placeholder="Descrição (opcional)" data-file="${file.name}">
+                            </div>
+                        `;
+                    };
+                    reader.readAsDataURL(file);
+                    
+                    filePreview.appendChild(preview);
+                }
+            });
+            
+            // Upload button
+            if (files.length > 0) {
+                const uploadBtn = document.createElement('button');
+                uploadBtn.className = 'btn btn-success w-100 mt-3';
+                uploadBtn.innerHTML = '<i class="fas fa-upload me-2"></i>Fazer Upload das Imagens';
+                uploadBtn.onclick = () => uploadFiles(files);
+                filePreview.appendChild(uploadBtn);
+            }
+        }
+        
+        async function uploadFiles(files) {
+            const module = document.getElementById('moduleInput').value || 'Geral';
+            const isMain = document.getElementById('setAsMain').checked;
+            
+            const formData = new FormData();
+            
+            files.forEach((file, index) => {
+                formData.append(`file_${index}`, file);
+                
+                // Get description from input
+                const descInput = document.querySelector(`input[data-file="${file.name}"]`);
+                if (descInput) {
+                    formData.append(`description_file_${index}`, descInput.value);
+                }
+            });
+            
+            formData.append('module', module);
+            formData.append('is_main', isMain);
+            
+            try {
+                const response = await fetch(`/api/projects/${currentProjectId}/gallery/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert(`✅ ${result.uploaded_images.length} imagens enviadas com sucesso!`);
+                    
+                    // Clear preview
+                    document.getElementById('filePreview').innerHTML = '';
+                    document.getElementById('fileInput').value = '';
+                    
+                    // Reload gallery
+                    fetchProjectGallery(currentProjectId);
+                } else {
+                    alert('❌ Erro: ' + result.error);
+                }
+            } catch (error) {
+                alert('❌ Erro no upload: ' + error.message);
+            }
+        }
+        
+        async function setMainImage(imageId) {
+            try {
+                const response = await fetch(`/api/projects/${currentProjectId}/gallery/main`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ image_id: imageId })
+                });
+                
+                if (response.ok) {
+                    alert('✅ Imagem principal definida!');
+                    fetchProjectGallery(currentProjectId);
+                } else {
+                    alert('❌ Erro ao definir imagem principal');
+                }
+            } catch (error) {
+                alert('❌ Erro: ' + error.message);
+            }
+        }
+        
+        async function deleteImage(imageId) {
+            if (confirm('Tem certeza que deseja remover esta imagem?')) {
+                try {
+                    const response = await fetch(`/api/projects/${currentProjectId}/gallery/${imageId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        alert('✅ Imagem removida!');
+                        fetchProjectGallery(currentProjectId);
+                    } else {
+                        alert('❌ Erro ao remover imagem');
+                    }
+                } catch (error) {
+                    alert('❌ Erro: ' + error.message);
+                }
+            }
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Manage Gallery shortcut
+        function manageGallery(projectId, projectTitle) {
+            // Switch to gallery tab
+            const galleryTab = new bootstrap.Tab(document.querySelector('a[href="#gallery"]'));
+            galleryTab.show();
+            
+            // Select the project
+            setTimeout(() => {
+                document.getElementById('projectSelector').value = projectId;
+                loadProjectGallery();
+            }, 500);
+        }
+        
+        // Edit GitHub project
+        function editGitHubProject(githubId, title, category, description) {
+            document.getElementById('github_id').value = githubId;
+            document.getElementById('edit_title').value = title;
+            document.getElementById('edit_category').value = category;
+            document.getElementById('edit_description').value = description;
+            
+            const modal = new bootstrap.Modal(document.getElementById('editGitHubModal'));
+            modal.show();
+        }
+        
+        // Save GitHub project changes
+        async function saveGitHubProject() {
+            const form = document.getElementById('editGitHubForm');
+            const formData = new FormData(form);
+            const githubId = formData.get('github_id');
+            
+            try {
+                const response = await fetch(`/api/projects/github/${githubId}`, {
+                    method: 'PUT',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    alert('✅ Projeto atualizado com sucesso!');
+                    bootstrap.Modal.getInstance(document.getElementById('editGitHubModal')).hide();
+                    setTimeout(() => location.reload(), 1000);
+                } else {
+                    alert('❌ Erro: ' + (result.error || 'Erro desconhecido'));
+                }
+            } catch (error) {
+                alert('❌ Erro: ' + error.message);
+            }
+        }
+        
+        // Delete custom project
+        async function deleteCustomProject(projectId) {
+            if (confirm('Tem certeza que deseja deletar este projeto?\n\nIsto também removerá todas as imagens da galeria!')) {
+                try {
+                    const response = await fetch(`/api/projects/custom/${projectId}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        alert('✅ Projeto deletado com sucesso!');
+                        document.querySelector(`[data-project-id="${projectId}"]`).remove();
+                    } else {
+                        alert('❌ Erro ao deletar projeto');
+                    }
+                } catch (error) {
+                    alert('❌ Erro: ' + error.message);
+                }
+            }
+        }
+        
+        // Refresh GitHub projects
+        async function refreshGitHubProjects() {
+            if (confirm('🔄 Isto irá atualizar a lista de projetos do GitHub.\n\nContinuar?')) {
+                location.reload();
+            }
+        }
+    </script>
+</body>
+</html>
