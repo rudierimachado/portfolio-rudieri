@@ -17,7 +17,22 @@ app.secret_key = os.environ.get('SECRET_KEY', 'rudieri_advanced_portfolio_2024')
 GITHUB_USERNAME = os.environ.get('GITHUB_USERNAME', 'rudirimachado')
 GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN', '')
 ADMIN_PASSWORD = os.environ.get('ADMIN_PASSWORD', '31270032')
+# Rota de teste - adicionar no início do app.py
+@app.route('/test')
+def test():
+    return """
+    <h1>✅ FUNCIONANDO!</h1>
+    <p>Flask está rodando no Render!</p>
+    <a href="/admin">Ir para Admin</a>
+    """
 
+@app.route('/debug')  
+def debug():
+    try:
+        user_data, categorized_projects, all_projects = organize_all_projects()
+        return f"<h1>✅ Função OK!</h1><p>Projetos encontrados: {len(all_projects)}</p>"
+    except Exception as e:
+        return f"<h1>❌ Erro:</h1><p>{str(e)}</p>"
 def load_project_data():
     """Carrega dados dos projetos incluindo galerias"""
     try:
