@@ -1,7 +1,21 @@
-from weasyprint import HTML, CSS
-from io import BytesIO
 from datetime import datetime
 import json
+
+try:
+    from weasyprint import HTML, CSS
+    from io import BytesIO
+    WEASYPRINT_AVAILABLE = True
+    print("✅ WeasyPrint carregado")
+except Exception as e:
+    WEASYPRINT_AVAILABLE = False
+    print(f"⚠️ WeasyPrint não disponível: {e}")
+
+try:
+    from pdf_generator_reportlab import generate_resume_reportlab
+    REPORTLAB_AVAILABLE = True
+except ImportError:
+    REPORTLAB_AVAILABLE = False
+    print("⚠️ ReportLab não disponível")
 
 def generate_complete_resume(user_data, categorized_projects, all_projects):
     """Gera um currículo completo e detalhado em PDF"""
@@ -570,9 +584,36 @@ def generate_complete_resume(user_data, categorized_projects, all_projects):
     </html>
     """
     
-    # Gerar PDF
-    pdf_buffer = BytesIO()
-    HTML(string=html_content).write_pdf(pdf_buffer)
-    pdf_buffer.seek(0)
+    # Tentar WeasyPrint primeiro
+    if WEASYPRINT_AVAILABLE:
+        try:
+            print("📄 Tentando WeasyPrint...")
+            
+            # Método 1: Usando buffer
+            pdf_buffer = BytesIO()
+            html_doc = HTML(string=html_content)
+            html_doc.write_pdf(pdf_buffer)
+            pdf_buffer.seek(0)
+            pdf_data = pdf_buffer.getvalue()
+            
+            print(f"✅ PDF gerado com WeasyPrint: {len(pdf_data)} bytes")
+            return pdf_data
+            
+        except Exception as e:
+            print(f"❌ Erro WeasyPrint: {e}")
+            print("🔄 Tentando fallback com ReportLab...")
     
-    return pdf_buffer.getvalue()
+    # Fallback para ReportLab
+    if REPORTLAB_AVAILABLE:
+        try:
+            print("📄 Gerando PDF com ReportLab...")
+            pdf_data = generate_resume_reportlab(user_data, categorized_projects, all_projects)
+            print(f"✅ PDF gerado com ReportLab: {len(pdf_data)} bytes")
+            return pdf_data
+            
+        except Exception as e:
+            print(f"❌ Erro ReportLab: {e}")
+            raise Exception(f"Falha na geração PDF com ReportLab: {str(e)}")
+    
+    # Se nenhum método funcionar
+    raise Exception("Nenhuma biblioteca de PDF disponível. Instale weasyprint ou reportlab.")
