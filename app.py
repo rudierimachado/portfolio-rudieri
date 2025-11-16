@@ -898,6 +898,486 @@ def backup_data():
     except:
         return jsonify({'error': 'Erro ao fazer backup'})
 
+@app.route('/admin/generate-resume')
+def generate_resume():
+    """Gera currículo completo atualizado"""
+    if 'admin_logged' not in session:
+        return redirect('/admin/login')
+    
+    try:
+        # Buscar dados completos do perfil
+        user_data, categorized_projects, all_projects = organize_all_projects()
+        
+        # Informações pessoais
+        personal_info = {
+            'name': user_data.get('name') or 'Rudieri Machado',
+            'email': 'rudirimachado@gmail.com',
+            'phone': '(47) 99660-9407',
+            'location': user_data.get('location') or 'Brasil',
+            'github': user_data.get('html_url') or f'https://github.com/{GITHUB_USERNAME}',
+            'bio': user_data.get('bio') or 'Desenvolvedor Full Stack & Especialista RPA. Criador e mantenedor do ERP SYSROHDEN, participando desde sua concepção até hoje no desenvolvimento de novos módulos.',
+            'instagram': 'https://www.instagram.com/rudieri.machado'
+        }
+        
+        # Estatísticas
+        stats = {
+            'total_projects': len(all_projects),
+            'systems': len(categorized_projects['sistema']),
+            'rpa': len(categorized_projects['rpa']),
+            'apis': len(categorized_projects['api']),
+            'web': len(categorized_projects['web']),
+            'mobile': len(categorized_projects['mobile']),
+            'languages': len(set([p.get('language', 'N/A') for p in all_projects if p.get('language') and p.get('language') != 'N/A']))
+        }
+        
+        # Projetos destacados (featured ou mais recentes)
+        featured_projects = []
+        for category, projects in categorized_projects.items():
+            for project in projects[:3]:  # Top 3 de cada categoria
+                if project.get('featured') or len(featured_projects) < 15:
+                    featured_projects.append({
+                        'title': project['title'],
+                        'description': project['description'],
+                        'category': category.title(),
+                        'language': project.get('language', 'N/A'),
+                        'github_url': project.get('github_url', ''),
+                        'demo_url': project.get('demo_url', ''),
+                        'tags': project.get('tags', []),
+                        'stars': project.get('stars', 0),
+                        'featured': project.get('featured', False)
+                    })
+        
+        # Ordenar projetos destacados por featured primeiro, depois por stars
+        featured_projects.sort(key=lambda x: (not x.get('featured', False), -x.get('stars', 0)))
+        featured_projects = featured_projects[:12]  # Limitar a 12 projetos
+        
+        # Tecnologias/linguagens mais usadas
+        language_count = {}
+        for project in all_projects:
+            lang = project.get('language')
+            if lang and lang != 'N/A':
+                language_count[lang] = language_count.get(lang, 0) + 1
+        
+        top_languages = sorted(language_count.items(), key=lambda x: x[1], reverse=True)[:8]
+        
+        # Template HTML do currículo
+        resume_html = f"""
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currículo - {personal_info['name']}</title>
+    <style>
+        * {{
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }}
+        
+        body {{
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8f9fa;
+        }}
+        
+        .container {{
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }}
+        
+        .resume {{
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }}
+        
+        .header {{
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }}
+        
+        .header h1 {{
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }}
+        
+        .header p {{
+            font-size: 1.2rem;
+            opacity: 0.9;
+            margin-bottom: 20px;
+        }}
+        
+        .contact-info {{
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin-top: 20px;
+        }}
+        
+        .contact-item {{
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.95rem;
+        }}
+        
+        .content {{
+            padding: 40px;
+        }}
+        
+        .section {{
+            margin-bottom: 40px;
+        }}
+        
+        .section h2 {{
+            color: #667eea;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }}
+        
+        .stats-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }}
+        
+        .stat-card {{
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }}
+        
+        .stat-number {{
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }}
+        
+        .stat-label {{
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }}
+        
+        .projects-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }}
+        
+        .project-card {{
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease;
+        }}
+        
+        .project-card:hover {{
+            transform: translateY(-2px);
+        }}
+        
+        .project-title {{
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }}
+        
+        .project-category {{
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+            margin-bottom: 10px;
+        }}
+        
+        .project-description {{
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }}
+        
+        .project-meta {{
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #888;
+        }}
+        
+        .project-language {{
+            background: #e9ecef;
+            padding: 2px 8px;
+            border-radius: 12px;
+        }}
+        
+        .project-stars {{
+            color: #ffc107;
+        }}
+        
+        .languages-grid {{
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+        }}
+        
+        .language-item {{
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #667eea;
+        }}
+        
+        .language-name {{
+            font-weight: 600;
+            color: #333;
+        }}
+        
+        .language-count {{
+            color: #666;
+            font-size: 0.9rem;
+        }}
+        
+        .print-btn {{
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+        }}
+        
+        .print-btn:hover {{
+            background: #5a5fcf;
+            transform: translateY(-2px);
+        }}
+        
+        @media print {{
+            .print-btn {{ display: none; }}
+            body {{ background: white; }}
+            .container {{ padding: 0; }}
+            .resume {{ box-shadow: none; }}
+        }}
+        
+        @media (max-width: 768px) {{
+            .contact-info {{
+                flex-direction: column;
+                gap: 15px;
+            }}
+            
+            .stats-grid {{
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            }}
+            
+            .projects-grid {{
+                grid-template-columns: 1fr;
+            }}
+        }}
+    </style>
+</head>
+<body>
+    <button class="print-btn" onclick="window.print()">📄 Imprimir/Salvar PDF</button>
+    
+    <div class="container">
+        <div class="resume">
+            <div class="header">
+                <h1>{personal_info['name']}</h1>
+                <p>{personal_info['bio']}</p>
+                
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <span>📧</span> {personal_info['email']}
+                    </div>
+                    <div class="contact-item">
+                        <span>📱</span> {personal_info['phone']}
+                    </div>
+                    <div class="contact-item">
+                        <span>📍</span> {personal_info['location']}
+                    </div>
+                    <div class="contact-item">
+                        <span>🐙</span> <a href="{personal_info['github']}" style="color: white;">GitHub</a>
+                    </div>
+                    <div class="contact-item">
+                        <span>📷</span> <a href="{personal_info['instagram']}" style="color: white;">Instagram</a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content">
+                <div class="section">
+                    <h2>📊 Estatísticas do Portfólio</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number">{stats['total_projects']}</div>
+                            <div class="stat-label">Projetos Totais</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">{stats['systems']}</div>
+                            <div class="stat-label">Sistemas</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">{stats['rpa']}</div>
+                            <div class="stat-label">Automações RPA</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">{stats['apis']}</div>
+                            <div class="stat-label">APIs</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">{stats['web']}</div>
+                            <div class="stat-label">Web Apps</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number">{stats['languages']}</div>
+                            <div class="stat-label">Linguagens</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>🚀 Projetos Destacados</h2>
+                    <div class="projects-grid">"""
+        
+        # Adicionar projetos destacados
+        for project in featured_projects:
+            stars_display = f"⭐ {project['stars']}" if project['stars'] > 0 else ""
+            featured_badge = "⭐ DESTAQUE" if project.get('featured') else ""
+            
+            resume_html += f"""
+                        <div class="project-card">
+                            <div class="project-title">{project['title']} {featured_badge}</div>
+                            <div class="project-category">{project['category']}</div>
+                            <div class="project-description">{project['description']}</div>
+                            <div class="project-meta">
+                                <span class="project-language">{project['language']}</span>
+                                <span class="project-stars">{stars_display}</span>
+                            </div>
+                        </div>"""
+        
+        # Adicionar tecnologias
+        resume_html += f"""
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>💻 Principais Tecnologias</h2>
+                    <div class="languages-grid">"""
+        
+        for lang, count in top_languages:
+            resume_html += f"""
+                        <div class="language-item">
+                            <div class="language-name">{lang}</div>
+                            <div class="language-count">{count} projeto{'s' if count > 1 else ''}</div>
+                        </div>"""
+        
+        # Finalizar HTML
+        resume_html += f"""
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>🎯 Experiência Profissional</h2>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #667eea;">
+                        <h3 style="color: #667eea; margin-bottom: 10px;">Desenvolvedor Full Stack & Especialista RPA</h3>
+                        <p style="color: #666; margin-bottom: 15px;"><strong>SYSROHDEN ERP</strong> | 2019 - Presente</p>
+                        <ul style="color: #666; padding-left: 20px;">
+                            <li>Criador e mantenedor principal do ERP SYSROHDEN</li>
+                            <li>Desenvolvimento de {stats['total_projects']} projetos em diversas tecnologias</li>
+                            <li>Especialização em automação RPA com {stats['rpa']} projetos desenvolvidos</li>
+                            <li>Desenvolvimento de {stats['systems']} sistemas completos</li>
+                            <li>Criação de {stats['apis']} APIs e {stats['web']} aplicações web</li>
+                            <li>Experiência com {stats['languages']} linguagens de programação diferentes</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2>🎓 Competências Técnicas</h2>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #667eea;">
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px;">
+                            <div>
+                                <h4 style="color: #667eea; margin-bottom: 10px;">🖥️ Desenvolvimento</h4>
+                                <ul style="color: #666; padding-left: 20px; font-size: 0.9rem;">
+                                    <li>Full Stack Development</li>
+                                    <li>API REST Development</li>
+                                    <li>Database Design & Management</li>
+                                    <li>Web Application Development</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 style="color: #667eea; margin-bottom: 10px;">🤖 Automação</h4>
+                                <ul style="color: #666; padding-left: 20px; font-size: 0.9rem;">
+                                    <li>RPA (Robotic Process Automation)</li>
+                                    <li>Web Scraping & Data Extraction</li>
+                                    <li>Process Automation</li>
+                                    <li>Bot Development</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 style="color: #667eea; margin-bottom: 10px;">🛠️ Ferramentas</h4>
+                                <ul style="color: #666; padding-left: 20px; font-size: 0.9rem;">
+                                    <li>Git & Version Control</li>
+                                    <li>Docker & Containerization</li>
+                                    <li>Cloud Deployment</li>
+                                    <li>CI/CD Pipelines</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Atualizar data de geração
+        document.addEventListener('DOMContentLoaded', function() {{
+            console.log('Currículo gerado em:', new Date().toLocaleString('pt-BR'));
+        }});
+    </script>
+</body>
+</html>"""
+        
+        return Response(
+            resume_html,
+            mimetype='text/html',
+            headers={
+                'Content-Disposition': f'inline; filename=curriculo_{personal_info["name"].replace(" ", "_").lower()}.html'
+            }
+        )
+        
+    except Exception as e:
+        print(f"❌ Erro ao gerar currículo: {e}")
+        print(f"❌ Stack: {traceback.format_exc()}")
+        return f"""
+        <h1>❌ Erro ao Gerar Currículo</h1>
+        <p>Erro: {str(e)}</p>
+        <a href="/admin" style="background: #6366f1; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Voltar ao Admin</a>
+        """
+
 if __name__ == '__main__':
     import os
     
